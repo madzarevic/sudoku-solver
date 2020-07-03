@@ -15,41 +15,28 @@ def subgrid(index): return 3 * (row(index) // 3) + column(index) // 3
 class Square(object):        
     def __init__(self, index):
         self._index = index
-        self._row = row(index)
-        self._column = column(index)
-        self._subgrid = subgrid(index)
         self._value = 0
         self._restrictions = set()
 
     @property
     def index(self): return self._index    
- 
-    @property
-    def row(self): return self._row
- 
-    @property
-    def column(self): return self._column
- 
-    @property
-    def subgrid(self): return self._subgrid
- 
+  
     @property
     def value(self): return self._value
- 
-    @property
-    def branches(self): return 9 - len(self._restrictions)
-        
-    def possibleValues(self):
-        for i in range(1, 10):
-            if i not in self._restrictions:
-                yield i
-    
+
     @value.setter
     def value(self, value):
         if not self.getRestriction(value):
             self._value = value
             self._restrictions = set([1, 2, 3, 4, 5, 6, 7, 8, 9])
             self._restrictions.remove(value)
+
+    def branches(self): return 9 - len(self._restrictions)
+        
+    def possibleValues(self):
+        for i in range(1, 10):
+            if i not in self._restrictions:
+                yield i
      
     def getRestriction(self, value): return value in self._restrictions
 
@@ -112,19 +99,17 @@ class Board(object):
        
     def setValue(self, index, value):
         square = self._squares[index]
-        row = square.row
-        column = square.column
-        subgrid = square.subgrid
         square.value = value
-        for otherSquare in self._squares:
-            if row == otherSquare.row or column == otherSquare.column or subgrid == otherSquare.subgrid:
+        for otherIndex in range(81):
+            if row(index) == row(otherIndex) or column(index) == column(otherIndex) or subgrid(index) == subgrid(otherIndex):
+                otherSquare = self._squares[otherIndex]
                 otherSquare.setRestriction(value)
                 
     def evolve(self):
         while True:
             changed = False
             for square in self._squares:
-                if square.branches == 1 and square.value == 0:
+                if square.branches() == 1 and square.value == 0:
                     possibleValues = list(square.possibleValues())
                     if len(possibleValues) == 1:
                         self.setValue(square.index, possibleValues[0])
@@ -135,7 +120,7 @@ class Board(object):
     def state(self):
         state = State.SOLVED
         for square in self._squares:
-            branches = square.branches
+            branches = square.branches()
             if branches > 1:
                 state = State.UNSOLVED
             elif branches < 1:
@@ -147,8 +132,8 @@ class Board(object):
         minBranches = 10
         branchSquare = None
         for square in self._squares:
-            if square.value == 0 and square.branches < minBranches:
-                minBranches = square.branches
+            if square.value == 0 and square.branches() < minBranches:
+                minBranches = square.branches()
                 branchSquare = square
                 if minBranches <= 2:
                     break

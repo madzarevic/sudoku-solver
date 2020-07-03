@@ -60,7 +60,7 @@ class Square(object):
 class Board(object):
     def __init__(self):
         self.name = None
-        self.clear()
+        self._squares = list(Square(i) for i in range(81))
         global breadth
         breadth += 1
         
@@ -69,9 +69,6 @@ class Board(object):
         boardCopy.name = copy.deepcopy(self.name, memo)
         boardCopy._squares = copy.deepcopy(self._squares, memo)
         return boardCopy
-    
-    def clear(self):
-        self._squares = list(Square(i) for i in range(81))
 
     @staticmethod
     def parseEuler(f):

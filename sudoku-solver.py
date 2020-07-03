@@ -58,8 +58,8 @@ class Square(object):
             self._restrictions.add(value)
 
 class Board(object):
-    def __init__(self, name = 'Unnamed'):
-        self.name = name
+    def __init__(self):
+        self.name = None
         self.clear()
         global breadth
         breadth += 1
@@ -72,17 +72,23 @@ class Board(object):
     
     def clear(self):
         self._squares = list(Square(i) for i in range(81))
-        
-    def inputEuler(self, lines):
-        self.clear()
-        self.name = lines[0].strip()
-        for i in range(9):
-            row = lines[i + 1]
-            for j in range(9):
-                value = int(row[j])
-                if value != 0:
-                    self.setValue(9 * i + j, value)
-        return 10
+
+    @staticmethod
+    def parseEuler(f):
+        board = Board()
+        for i in range(-1, 9):
+            line = f.readline()
+            if line == '':
+                return None
+            if i == -1:
+                board.name = line.strip()
+            else:
+                row = line.strip()
+                for j in range(9):
+                    value = int(row[j])
+                    if value != 0:
+                        board.setValue(9 * i + j, value)
+        return board
     
     def outputEuler(self):
         print(self.name)
@@ -175,13 +181,12 @@ class Board(object):
         
 def main():
     global breadth
-    lines = sys.stdin.readlines()
     sum = 0
-    while len(lines) > 0:
+    while True:
+        board = Board.parseEuler(sys.stdin)
+        if board is None:
+            break
         breadth = 0
-        board = Board()
-        size = board.inputEuler(lines)
-        lines = lines[size:]
         solution = board.solve()
         solution.outputPretty()
         sum += solution.proof()

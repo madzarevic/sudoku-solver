@@ -71,21 +71,23 @@ class Board(object):
         return board
     
     def outputEuler(self):
-        print(self.name)
+        rows = []
+        rows.append(self.name)
         for i in range(9):
+            row = ''
             for j in range(9):
                 square = self._squares[i * 9 + j]
-                value = square.value()
-                print(value, end='')
-            print('')
+                row += str(square.value)
+            rows.append(row)
+        return "\n".join(rows)
             
     def outputPretty(self):
-        strings = []
-        strings.append('+-----------+')
-        strings.append("|{:^11}|".format(self.name))
+        rows = []
+        rows.append('+-----------+')
+        rows.append("|{:^11}|".format(self.name))
         for i in range(9):
             if i % 3 == 0:
-                strings.append('+---+---+---+')
+                rows.append('+---+---+---+')
             row = ''
             for j in range(9):
                 if j % 3 == 0:
@@ -93,9 +95,9 @@ class Board(object):
                 square = self._squares[i * 9 + j]
                 row += str(square.value)
             row += '|'
-            strings.append(row)
-        strings.append('+---+---+---+')
-        return "\n".join(strings)
+            rows.append(row)
+        rows.append('+---+---+---+')
+        return "\n".join(rows)
        
     def setValue(self, index, value):
         square = self._squares[index]

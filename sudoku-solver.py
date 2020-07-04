@@ -80,18 +80,22 @@ class Board(object):
             print('')
             
     def outputPretty(self):
-        print("+-----------+\n|{:^11}|".format(self.name))
+        strings = []
+        strings.append('+-----------+')
+        strings.append("|{:^11}|".format(self.name))
         for i in range(9):
             if i % 3 == 0:
-                print('+---+---+---+')
+                strings.append('+---+---+---+')
+            row = ''
             for j in range(9):
                 if j % 3 == 0:
-                    print('|', end='')
+                    row += '|'
                 square = self._squares[i * 9 + j]
-                value = square.value
-                print(value, end='')
-            print('|')
-        print('+---+---+---+')
+                row += str(square.value)
+            row += '|'
+            strings.append(row)
+        strings.append('+---+---+---+')
+        return "\n".join(strings)
        
     def setValue(self, index, value):
         square = self._squares[index]
@@ -156,20 +160,24 @@ class Board(object):
             return returnBoard
     
     def proof(self): return 100 * self._squares[0].value + 10 * self._squares[1].value + self._squares[2].value
-        
-def main():
+
+def problem96(filename='p096_sudoku.txt'):
     global breadth
     sum = 0
-    while True:
-        board = Board.parseEuler(sys.stdin)
-        if board is None:
-            break
-        breadth = 0
-        solution = board.solve()
-        solution.outputPretty()
-        sum += solution.proof()
+    with open(filename, 'r') as f:
+        while True:
+            board = Board.parseEuler(f)
+            if board is None:
+                break
+            breadth = 0
+            solution = board.solve()
+            output = solution.outputPretty()
+            print(output, file=sys.stderr)
+            sum += solution.proof()
+    return sum
         
-    print("sum:{}".format(sum), file=sys.stderr)
+def main():
+    print("sum:{}".format(problem96()), file=sys.stderr)
 
 if __name__ == '__main__':
     main()

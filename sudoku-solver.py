@@ -16,7 +16,7 @@ class Square(object):
     def __init__(self, index):
         self._index = index
         self._value = 0
-        self._restrictions = set()
+        self._possibilities = set(range(1, 10))
 
     @property
     def index(self): return self._index    
@@ -26,23 +26,19 @@ class Square(object):
 
     @value.setter
     def value(self, value):
-        if not self.getRestriction(value):
-            self._value = value
-            self._restrictions = set([1, 2, 3, 4, 5, 6, 7, 8, 9])
-            self._restrictions.remove(value)
+        self._value = value
+        self._possibilities.clear()
 
-    def branches(self): return 9 - len(self._restrictions)
+    def branches(self): return len(self._possibilities) if self.value == 0 else 1
         
     def possibleValues(self):
-        for i in range(1, 10):
-            if i not in self._restrictions:
-                yield i
-     
-    def getRestriction(self, value): return value in self._restrictions
+        if self.value == 0:
+            return self._possibilities
+        return set(self.value)
 
     def setRestriction(self, value):
         if self.value == 0:
-            self._restrictions.add(value)
+            self._possibilities.discard(value)
 
 class Board(object):
     def __init__(self):
